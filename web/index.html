@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goblin Mining Co. - Hand-Cranked Bitcoin Mining</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/scratch-card.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <span class="gear-icon">&#9881;</span>
+                <h1>GOBLIN MINING CO.</h1>
+                <span class="gear-icon">&#9881;</span>
+            </div>
+            <p class="subtitle">Hand-Cranked Since Block #0</p>
+        </header>
+
+        <!-- Goblin Lore Section -->
+        <section class="lore-section">
+            <div class="lore-header" id="lore-toggle">
+                <h2 class="lore-title">&#9874; The Goblin Mining Philosophy &#9874;</h2>
+                <p class="lore-intro">We are the Amish of Bitcoin mining. While others chase terahashes with their fancy silicon, we honor the old ways.</p>
+                <button class="expand-btn" id="lore-expand-btn">
+                    <span class="expand-text">Read Our Manifesto</span>
+                    <span class="expand-icon">&#9660;</span>
+                </button>
+            </div>
+
+            <div class="lore-content" id="lore-content">
+                <div class="lore-scroll">
+                    <div class="lore-paragraph">
+                        <h3>&#9881; On the Rejection of ASICs</h3>
+                        <p>The great mining pools speak of "efficiency" and "hashrate optimization." They stack their whirring machines in air-conditioned warehouses, consuming megawatts of power. <strong>We reject this heresy.</strong></p>
+                        <p>A true goblin knows that every hash should be <em>earned</em> - computed by hand, one nonce at a time, with the satisfying clang of pickaxe against cryptographic ore.</p>
+                    </div>
+                    <div class="lore-paragraph">
+                        <h3>&#9935; The Sacred Art of Manual Mining</h3>
+                        <p>Our ancestors mined with paper and pencil. They calculated SHA256 rounds by candlelight, cross-referencing lookup tables carved into stone tablets. We carry on their legacy with only slightly more convenience.</p>
+                        <p>Each swing of the pickaxe is a meditation. Each failed nonce brings us closer to enlightenment (and statistically no closer to finding a block).</p>
+                    </div>
+                    <div class="lore-paragraph">
+                        <h3>&#128176; A Note on Probability</h3>
+                        <p>At current difficulty, finding a mainnet block requires approximately <strong>90 trillion hashes</strong> on average. At one hash per pickaxe swing, mining continuously, you would find a block in roughly <strong>2.8 million years</strong>.</p>
+                        <p>But a goblin does not mine for profit. A goblin mines for <em>principle</em>. And also because the clanging sound is quite satisfying.</p>
+                    </div>
+                    <div class="lore-quote">
+                        "Give a goblin an ASIC and they'll mine for a day. Teach a goblin to swing a pickaxe and they'll mine for 2.8 million years without finding anything."
+                        <span class="quote-attribution">- Ancient Goblin Proverb</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Network Stats Panel -->
+        <section class="network-stats-section">
+            <h2 class="section-title">&#9881; Network Intelligence &#9881;</h2>
+            <div class="network-stats-grid">
+                <div class="network-stat">
+                    <span class="stat-label">Network Hashrate</span>
+                    <span class="stat-value" id="network-hashrate">Loading...</span>
+                    <span class="stat-compare" id="hashrate-compare"></span>
+                </div>
+                <div class="network-stat">
+                    <span class="stat-label">Current Difficulty</span>
+                    <span class="stat-value" id="network-difficulty">Loading...</span>
+                </div>
+                <div class="network-stat goblin-stat">
+                    <span class="stat-label">Your Goblin's Share</span>
+                    <span class="stat-value goblin-value" id="goblin-share">0%</span>
+                    <span class="stat-compare">(of global hashrate)</span>
+                </div>
+            </div>
+            <div class="top-pools">
+                <h3>Top Mining Pools <span class="pool-note">(The Competition)</span></h3>
+                <div class="pools-list" id="pools-list">
+                    <div class="pool-item loading">Loading pool data...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Block Header Explainer -->
+        <section class="explainer-section">
+            <div class="explainer-header" id="explainer-toggle">
+                <h2 class="explainer-title">&#9881; What Are We Mining? &#9881;</h2>
+                <p class="explainer-intro">Every Bitcoin block has an 80-byte header. We hash this header, changing the nonce, until the hash starts with enough zeros.</p>
+                <button class="expand-btn" id="expand-btn">
+                    <span class="expand-text">Show Technical Details</span>
+                    <span class="expand-icon">&#9660;</span>
+                </button>
+            </div>
+
+            <div class="explainer-content" id="explainer-content">
+            <!-- 80-byte Header Breakdown -->
+            <div class="header-breakdown">
+                <h3 class="breakdown-title">The 80-Byte Block Header</h3>
+                <div class="header-fields">
+                    <div class="header-field" data-bytes="4">
+                        <span class="field-bytes">4 bytes</span>
+                        <span class="field-label">Version</span>
+                        <span class="field-explain">Protocol version & BIP9 signaling bits</span>
+                    </div>
+                    <div class="header-field" data-bytes="32">
+                        <span class="field-bytes">32 bytes</span>
+                        <span class="field-label">Previous Block Hash</span>
+                        <span class="field-explain">Links this block to the chain</span>
+                    </div>
+                    <div class="header-field" data-bytes="32">
+                        <span class="field-bytes">32 bytes</span>
+                        <span class="field-label">Merkle Root</span>
+                        <span class="field-explain">Hash of all transactions in the block</span>
+                    </div>
+                    <div class="header-field" data-bytes="4">
+                        <span class="field-bytes">4 bytes</span>
+                        <span class="field-label">Timestamp</span>
+                        <span class="field-explain">Unix time when block was mined</span>
+                    </div>
+                    <div class="header-field" data-bytes="4">
+                        <span class="field-bytes">4 bytes</span>
+                        <span class="field-label">Bits</span>
+                        <span class="field-explain">Compact encoding of difficulty target</span>
+                    </div>
+                    <div class="header-field nonce" data-bytes="4">
+                        <span class="field-bytes">4 bytes</span>
+                        <span class="field-label">Nonce</span>
+                        <span class="field-explain">The number YOU choose each swing!</span>
+                    </div>
+                </div>
+                <div class="header-formula">
+                    <code>block_hash = SHA256(SHA256(header))</code>
+                    <span class="formula-note">If hash &lt; target, you struck gold!</span>
+                </div>
+            </div>
+
+            <h3 class="examples-title">Real Block Examples</h3>
+            <div class="example-blocks-grid">
+                <!-- Empty Block Example -->
+                <div class="example-block-card">
+                    <div class="block-card-header">
+                        <span class="block-number">#860,932</span>
+                        <span class="block-tag empty">Coinbase Only</span>
+                    </div>
+                    <p class="block-card-desc">Just like the blocks you're mining here - only a coinbase transaction!</p>
+                    <div class="example-block">
+                        <div class="block-field">
+                            <span class="field-name">Version:</span>
+                            <span class="field-value"><code>0x24320000</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Prev Hash:</span>
+                            <span class="field-value"><code>0000...ffe5</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Merkle Root:</span>
+                            <span class="field-value"><code>1807...5094</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Timestamp:</span>
+                            <span class="field-value"><code>1726101953</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Bits:</span>
+                            <span class="field-value"><code>0x1703218c</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Nonce:</span>
+                            <span class="field-value highlight"><code>3,102,506,023</code></span>
+                        </div>
+                        <div class="block-field result">
+                            <span class="field-name">Hash:</span>
+                            <span class="field-value hash"><code>00000000000000000000<wbr>21cbca8d7e3c77864807<wbr>0da31e394929ba0fc65c001c</code></span>
+                        </div>
+                    </div>
+                    <div class="block-card-footer">
+                        <span class="miner-badge">Foundry USA (ASIC users)</span>
+                        <span class="reward">+3.125 BTC</span>
+                    </div>
+                </div>
+
+                <!-- Halving Block Example -->
+                <div class="example-block-card featured">
+                    <div class="block-card-header">
+                        <span class="block-number">#840,000</span>
+                        <span class="block-tag halving">4th Halving</span>
+                    </div>
+                    <p class="block-card-desc">The historic block that started the 3.125 BTC era - with record fees!</p>
+                    <div class="example-block">
+                        <div class="block-field">
+                            <span class="field-name">Version:</span>
+                            <span class="field-value"><code>0x2a600000</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Prev Hash:</span>
+                            <span class="field-value"><code>0000...94ab</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Merkle Root:</span>
+                            <span class="field-value"><code>031b...894f</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Timestamp:</span>
+                            <span class="field-value"><code>1713571767</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Bits:</span>
+                            <span class="field-value"><code>0x17034219</code></span>
+                        </div>
+                        <div class="block-field">
+                            <span class="field-name">Nonce:</span>
+                            <span class="field-value highlight"><code>3,932,395,645</code></span>
+                        </div>
+                        <div class="block-field result">
+                            <span class="field-name">Hash:</span>
+                            <span class="field-value hash"><code>00000000000000000003<wbr>20283a032748cef82278<wbr>73ff4872689bf23f1cda83a5</code></span>
+                        </div>
+                    </div>
+                    <div class="block-card-footer">
+                        <span class="miner-badge">ViaBTC</span>
+                        <span class="reward featured">+40.7 BTC (~$2.6M)</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="explainer-note">The nonce is what YOU control. When SHA256(SHA256(header)) produces a hash below the target difficulty, you win the block reward!</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Column: Mining Claim -->
+            <section class="ticket-section">
+                <!-- Network Toggle -->
+                <div class="network-toggle">
+                    <button id="mainnet-btn" class="network-btn active" data-network="mainnet">
+                        Mainnet
+                    </button>
+                    <button id="testnet-btn" class="network-btn" data-network="testnet4">
+                        Testnet4
+                    </button>
+                </div>
+
+                <div class="mining-claim" id="lottery-ticket">
+                    <div class="claim-header">
+                        <span class="claim-number">CLAIM #<span id="block-height">------</span></span>
+                        <span class="claim-network" id="network-display">MAINNET</span>
+                    </div>
+
+                    <!-- Address Input -->
+                    <div class="address-section">
+                        <label for="address-input">Your Bitcoin Address:</label>
+                        <input
+                            type="text"
+                            id="address-input"
+                            placeholder="bc1q... or 1... or 3..."
+                            autocomplete="off"
+                        >
+                        <div class="address-feedback" id="address-feedback"></div>
+                    </div>
+
+                    <!-- Nonce Input -->
+                    <div class="nonce-section">
+                        <label for="nonce-input">Your Chosen Nonce:</label>
+                        <input
+                            type="number"
+                            id="nonce-input"
+                            placeholder="Enter a number (0 to 4,294,967,295)"
+                            min="0"
+                            max="4294967295"
+                            autocomplete="off"
+                        >
+                        <div class="nonce-hint">Pick any 32-bit number. Fortune favors the bold!</div>
+                    </div>
+
+                    <!-- Pickaxe Mining Area -->
+                    <div class="mining-area-container">
+                        <div class="mining-area" id="mining-area">
+                            <div class="rock-face" id="rock-face">
+                                <div class="ore-vein"></div>
+                                <div class="ore-vein"></div>
+                                <div class="ore-vein"></div>
+                            </div>
+                            <div class="result-layer" id="result-layer">
+                                <div class="hash-display" id="hash-display">
+                                    Enter a nonce and swing!
+                                </div>
+                            </div>
+                            <div class="pickaxe-container" id="pickaxe-container">
+                                <button class="pickaxe-btn" id="pickaxe-btn" disabled>
+                                    <span class="pickaxe-icon">&#9935;</span>
+                                    <span class="pickaxe-text">SWING!</span>
+                                </button>
+                            </div>
+                            <div class="sparks" id="sparks"></div>
+                        </div>
+                        <p class="mining-hint">Enter a nonce above, then swing your pickaxe!</p>
+                    </div>
+
+                    <!-- Prize Display -->
+                    <div class="prize-section">
+                        <div class="prize-label">BLOCK REWARD</div>
+                        <div class="prize-amount" id="prize-amount">3.125 BTC</div>
+                        <div class="prize-sats" id="prize-sats">(312,500,000 sats)</div>
+                    </div>
+
+                    <!-- Auto-Mining Toggle -->
+                    <div class="auto-mine-section">
+                        <div class="auto-mine-toggle">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="auto-mine-toggle">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Auto-Mine Mode</span>
+                            </label>
+                            <span class="toggle-hint">(Betrays goblin principles, but faster)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Mining Status -->
+            <section class="status-section">
+                <div class="status-panel">
+                    <h2>&#9881; Mining Status &#9881;</h2>
+
+                    <div class="stats-grid">
+                        <div class="stat-item" data-tooltip="Number of pickaxe swings (hashes) performed per second when auto-mining.">
+                            <span class="stat-label">Swing Rate <span class="info-icon">?</span></span>
+                            <span class="stat-value" id="hash-rate">0 H/s</span>
+                        </div>
+                        <div class="stat-item" data-tooltip="Total number of pickaxe swings since you started. Each swing tries one nonce.">
+                            <span class="stat-label">Total Swings <span class="info-icon">?</span></span>
+                            <span class="stat-value" id="total-hashes">0</span>
+                        </div>
+                        <div class="stat-item" data-tooltip="Shares are hashes starting with '00...' (at least one zero byte). They occur roughly 1 in 256 swings. A small victory!">
+                            <span class="stat-label">Shares Found <span class="info-icon">?</span></span>
+                            <span class="stat-value" id="shares-found">0</span>
+                        </div>
+                        <div class="stat-item" data-tooltip="The last nonce you tried (or current nonce in auto-mine mode).">
+                            <span class="stat-label">Last Nonce <span class="info-icon">?</span></span>
+                            <span class="stat-value" id="current-nonce">-</span>
+                        </div>
+                        <div class="stat-item" data-tooltip="Time since mining started on this block template.">
+                            <span class="stat-label">Elapsed Time <span class="info-icon">?</span></span>
+                            <span class="stat-value" id="elapsed-time">0:00</span>
+                        </div>
+                        <div class="stat-item" data-tooltip="The hash with the most leading zeros found so far. More zeros = closer to winning!">
+                            <span class="stat-label">Best Hash <span class="info-icon">?</span></span>
+                            <span class="stat-value stat-hash" id="best-hash">-</span>
+                        </div>
+                    </div>
+
+                    <div class="block-info">
+                        <h3>Block Info</h3>
+                        <div class="info-row" data-tooltip="The block number you're trying to mine. This is one more than the current blockchain tip.">
+                            <span>Height: <span class="info-icon">?</span></span>
+                            <span id="info-height">-</span>
+                        </div>
+                        <div class="info-row" data-tooltip="Current network difficulty. The target your hash must beat.">
+                            <span>Difficulty: <span class="info-icon">?</span></span>
+                            <span id="info-difficulty">-</span>
+                        </div>
+                        <div class="info-row" data-tooltip="Hash of the previous block in the chain. Your block will reference this.">
+                            <span>Prev Hash: <span class="info-icon">?</span></span>
+                            <span class="hash-short" id="info-prev-hash">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Mining Controls (for auto-mine) -->
+                    <div class="controls" id="auto-controls" style="display: none;">
+                        <button id="start-btn" class="btn btn-primary" disabled>
+                            START AUTO-MINING
+                        </button>
+                        <button id="stop-btn" class="btn btn-secondary" disabled>
+                            STOP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Technical Explanation Panel -->
+                <div class="tech-panel">
+                    <h3>&#9881; How Goblin Mining Works &#9881;</h3>
+                    <div class="tech-content">
+                        <div class="tech-section">
+                            <h4>Block Construction</h4>
+                            <p>Your block contains a single <strong>coinbase transaction</strong> that creates new bitcoins and sends them to your address. The block header (80 bytes) includes:</p>
+                            <ul>
+                                <li><strong>Version</strong> - Protocol version with BIP9 signaling bits</li>
+                                <li><strong>Previous Block Hash</strong> - Links to the blockchain</li>
+                                <li><strong>Merkle Root</strong> - Hash of all transactions (just coinbase here)</li>
+                                <li><strong>Timestamp</strong> - Current Unix time</li>
+                                <li><strong>Bits</strong> - Compact difficulty target</li>
+                                <li><strong>Nonce</strong> - <em>YOUR chosen number!</em></li>
+                            </ul>
+                        </div>
+                        <div class="tech-section">
+                            <h4>The Sacred Swing</h4>
+                            <p>When you swing your pickaxe, we compute <strong>SHA256(SHA256(header))</strong> with your chosen nonce and check if the result is below the target.</p>
+                            <p>At mainnet difficulty (~90T), you need a hash starting with approximately <strong>19 zero bytes</strong> (76+ zero bits). The odds of any single swing succeeding are about 1 in 10<sup>23</sup>.</p>
+                        </div>
+                        <div class="tech-section">
+                            <h4>What Are Shares?</h4>
+                            <p>Shares are hashes with at least one leading zero byte, displaying as <code>00...</code>. They occur roughly 1 in 256 swings. Finding one means you're technically mining! Just... very slowly.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                Goblin Mining Co. - Keeping the old ways alive since the Genesis Block.
+                <br>
+                Your odds of finding a mainnet block: approximately 1 in 10<sup>23</sup> per swing.
+                <br>
+                <span class="footer-motto">"We mine not because it is efficient, but because it is ours."</span>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal" id="winner-modal">
+        <div class="modal-content winner-modal">
+            <h2>&#9881; STRIKE! &#9881;</h2>
+            <p>By the ancient gears, you found a valid block!</p>
+            <div class="winner-hash" id="winner-hash"></div>
+            <div class="winner-nonce">Winning Nonce: <span id="winner-nonce"></span></div>
+            <button id="submit-block-btn" class="btn btn-primary">Submit Block to Network</button>
+            <button id="close-modal-btn" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+
+    <!-- Share Found Toast -->
+    <div class="toast" id="share-toast">
+        &#9935; Share Found! Leading zeros: <span id="share-zeros"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Explainer toggles (runs immediately, no module dependency)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Block explainer toggle
+            const expandBtn = document.getElementById('expand-btn');
+            const explainerSection = document.querySelector('.explainer-section');
+            if (expandBtn && explainerSection) {
+                expandBtn.addEventListener('click', function() {
+                    explainerSection.classList.toggle('expanded');
+                });
+            }
+
+            // Lore toggle
+            const loreExpandBtn = document.getElementById('lore-expand-btn');
+            const loreSection = document.querySelector('.lore-section');
+            if (loreExpandBtn && loreSection) {
+                loreExpandBtn.addEventListener('click', function() {
+                    loreSection.classList.toggle('expanded');
+                });
+            }
+        });
+    </script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

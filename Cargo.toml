@@ -1,0 +1,38 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/miner-core",
+    "crates/miner-wasm",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/garykrause/scratch-off-miner"
+
+[workspace.dependencies]
+# Hashing
+sha2 = { version = "0.10", default-features = false }
+
+# Hex encoding
+hex = { version = "0.4", default-features = false, features = ["alloc"] }
+
+# Serialization
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+serde_json = "1.0"
+
+# WASM bindings
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = "0.3"
+serde-wasm-bindgen = "0.6"
+getrandom = { version = "0.2", features = ["js"] }
+console_error_panic_hook = "0.1"
+
+# Error handling
+thiserror = "1.0"
+
+# Testing
+wasm-bindgen-test = "0.3"

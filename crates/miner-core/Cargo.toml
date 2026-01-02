@@ -1,0 +1,16 @@
+[package]
+name = "miner-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Core Bitcoin mining logic for scratch-off miner"
+
+[features]
+default = ["std"]
+std = ["sha2/std", "hex/std"]
+
+[dependencies]
+sha2 = { workspace = true }
+hex = { workspace = true }
+
+[dev-dependencies]

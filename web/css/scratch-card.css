@@ -1,0 +1,445 @@
+/* Mining Claim / Pickaxe Mining Styles - Steampunk Goblin Theme */
+
+.mining-claim {
+    width: 400px;
+    background: linear-gradient(135deg, #2a2218 0%, #1a1510 50%, #2a2218 100%);
+    border: 4px solid #cd7f32;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(212, 175, 55, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Rivet decoration */
+.mining-claim::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    border: 2px solid rgba(205, 127, 50, 0.3);
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+/* Corner gears decoration */
+.mining-claim::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20px 20px, rgba(212, 175, 55, 0.15) 8px, transparent 8px),
+        radial-gradient(circle at calc(100% - 20px) 20px, rgba(212, 175, 55, 0.15) 8px, transparent 8px),
+        radial-gradient(circle at 20px calc(100% - 20px), rgba(212, 175, 55, 0.15) 8px, transparent 8px),
+        radial-gradient(circle at calc(100% - 20px) calc(100% - 20px), rgba(212, 175, 55, 0.15) 8px, transparent 8px);
+    pointer-events: none;
+}
+
+.claim-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #3d2f1e 0%, #2a2218 100%);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    border: 1px solid #cd7f32;
+}
+
+.claim-number {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #d4af37;
+}
+
+.claim-network {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1a1510;
+    background: #cd7f32;
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+
+.claim-network.testnet {
+    background: #39ff14;
+    color: #1a1510;
+}
+
+/* Mining Area Container */
+.mining-area-container {
+    margin: 20px 0;
+}
+
+.mining-area {
+    position: relative;
+    width: 340px;
+    height: 180px;
+    margin: 0 auto;
+    border: 3px solid #cd7f32;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0f0d0a;
+}
+
+/* Rock face background */
+.rock-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(135deg, #2a2218 0%, #1a1510 50%, #2a2218 100%);
+    z-index: 1;
+}
+
+/* Ore veins in the rock */
+.ore-vein {
+    position: absolute;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+    height: 3px;
+    border-radius: 2px;
+}
+
+.ore-vein:nth-child(1) {
+    top: 30%;
+    left: 10%;
+    width: 40%;
+    transform: rotate(-15deg);
+}
+
+.ore-vein:nth-child(2) {
+    top: 50%;
+    left: 45%;
+    width: 35%;
+    transform: rotate(10deg);
+}
+
+.ore-vein:nth-child(3) {
+    top: 70%;
+    left: 20%;
+    width: 30%;
+    transform: rotate(-5deg);
+}
+
+.result-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    z-index: 5;
+    background: rgba(15, 13, 10, 0.9);
+}
+
+.hash-display {
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    color: #39ff14;
+    text-align: center;
+    word-break: break-all;
+    line-height: 1.4;
+    text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    padding: 10px;
+}
+
+.hash-display.winner {
+    color: #d4af37;
+    font-size: 1rem;
+    animation: winner-pulse 1s infinite;
+}
+
+@keyframes winner-pulse {
+    0%, 100% {
+        color: #d4af37;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+    50% {
+        color: #39ff14;
+        text-shadow: 0 0 20px rgba(57, 255, 20, 0.8);
+    }
+}
+
+/* Pickaxe Button Container */
+.pickaxe-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+}
+
+.pickaxe-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 25px;
+    background: linear-gradient(135deg, #cd7f32 0%, #8b5a2b 100%);
+    border: 2px solid #d4af37;
+    border-radius: 8px;
+    color: #f5e6d3;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.pickaxe-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(205, 127, 50, 0.4);
+    background: linear-gradient(135deg, #d4af37 0%, #cd7f32 100%);
+}
+
+.pickaxe-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.pickaxe-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pickaxe-btn.swinging {
+    animation: swing 0.3s ease-out;
+}
+
+@keyframes swing {
+    0% { transform: translateX(-50%) rotate(0deg); }
+    25% { transform: translateX(-50%) rotate(-20deg); }
+    50% { transform: translateX(-50%) rotate(10deg); }
+    75% { transform: translateX(-50%) rotate(-5deg); }
+    100% { transform: translateX(-50%) rotate(0deg); }
+}
+
+.pickaxe-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.pickaxe-text {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* Sparks effect */
+.sparks {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.spark {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 50%;
+    animation: spark-fly 0.5s ease-out forwards;
+}
+
+@keyframes spark-fly {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+    }
+}
+
+.mining-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #a89780;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* Prize Section */
+.prize-section {
+    text-align: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #3d2f1e 0%, #2a2218 100%);
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid #cd7f32;
+}
+
+.prize-label {
+    font-size: 0.9rem;
+    color: #cd7f32;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.prize-amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #d4af37;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.prize-sats {
+    font-size: 0.85rem;
+    color: #a89780;
+}
+
+/* Mining active state */
+.mining-claim.mining-active {
+    animation: active-glow 2s infinite alternate;
+}
+
+@keyframes active-glow {
+    from {
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            0 0 20px rgba(57, 255, 20, 0.2),
+            inset 0 1px 0 rgba(212, 175, 55, 0.2);
+    }
+    to {
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            0 0 40px rgba(57, 255, 20, 0.4),
+            inset 0 1px 0 rgba(212, 175, 55, 0.2);
+    }
+}
+
+/* Winner effects */
+.mining-claim.winner {
+    animation: winner-glow 1s infinite alternate;
+}
+
+@keyframes winner-glow {
+    from {
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            0 0 30px rgba(212, 175, 55, 0.5),
+            inset 0 1px 0 rgba(212, 175, 55, 0.3);
+    }
+    to {
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            0 0 60px rgba(212, 175, 55, 0.8),
+            0 0 80px rgba(57, 255, 20, 0.4),
+            inset 0 1px 0 rgba(212, 175, 55, 0.3);
+    }
+}
+
+/* Share found effect */
+.mining-claim.share-found {
+    animation: share-flash 0.3s ease-out;
+}
+
+@keyframes share-flash {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.3) hue-rotate(30deg); }
+    100% { filter: brightness(1); }
+}
+
+/* Rock crack effect when mining */
+.rock-face.cracked::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 20 L55 40 L70 45 L55 50 L60 70 L50 55 L40 70 L45 50 L30 45 L45 40 Z' fill='none' stroke='%23d4af37' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: crack-appear 0.3s ease-out forwards;
+}
+
+@keyframes crack-appear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Confetti for winners - steampunk style (gears/sparks) */
+.confetti {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    animation: confetti-fall 3s ease-out forwards;
+    z-index: 1000;
+}
+
+.confetti.gear {
+    background: #d4af37;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.confetti.spark {
+    background: #39ff14;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #39ff14;
+}
+
+.confetti.copper {
+    background: #b87333;
+    border-radius: 2px;
+}
+
+@keyframes confetti-fall {
+    0% {
+        opacity: 1;
+        transform: translateY(-50px) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 450px) {
+    .mining-claim {
+        width: 100%;
+        max-width: 360px;
+        padding: 15px;
+    }
+
+    .mining-area {
+        width: 300px;
+        height: 160px;
+    }
+
+    .prize-amount {
+        font-size: 1.5rem;
+    }
+
+    .pickaxe-btn {
+        padding: 8px 20px;
+    }
+
+    .pickaxe-icon {
+        font-size: 1.5rem;
+    }
+}
