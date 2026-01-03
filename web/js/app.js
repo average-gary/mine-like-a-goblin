@@ -422,9 +422,9 @@ async function swingPickaxe() {
         const elapsedMs = Date.now() - miningStartTime;
         elements.elapsedTime.textContent = formatTime(elapsedMs);
 
-        // Update best hash
+        // Update best hash (first swing or better hash found)
         const leadingZeros = countLeadingZeros(result.hash);
-        if (leadingZeros > bestLeadingZeros) {
+        if (!bestHash || leadingZeros > bestLeadingZeros) {
             bestLeadingZeros = leadingZeros;
             bestHash = result.hash;
             elements.bestHash.textContent = bestHash;
