@@ -14,7 +14,6 @@ let blockCheckInterval = null;
 let isInitialized = false;
 let miningStartTime = null;
 let totalSwings = 0;
-let sharesFound = 0;
 let bestHash = null;
 let bestLeadingZeros = 0;
 let isAutoMining = false;
@@ -48,7 +47,6 @@ const elements = {
     // Stats
     hashRate: document.getElementById('hash-rate'),
     totalHashes: document.getElementById('total-hashes'),
-    sharesFound: document.getElementById('shares-found'),
     currentNonce: document.getElementById('current-nonce'),
     elapsedTime: document.getElementById('elapsed-time'),
     bestHash: document.getElementById('best-hash'),
@@ -73,8 +71,8 @@ const elements = {
     closeModalBtn: document.getElementById('close-modal-btn'),
 
     // Toast
-    shareToast: document.getElementById('share-toast'),
-    shareZeros: document.getElementById('share-zeros'),
+    blockToast: document.getElementById('block-toast'),
+    toastMessage: document.getElementById('toast-message'),
 
     // Ticket/Claim
     lotteryTicket: document.getElementById('lottery-ticket'),
@@ -85,6 +83,10 @@ const elements = {
     networkDifficulty: document.getElementById('network-difficulty'),
     goblinShare: document.getElementById('goblin-share'),
     poolsList: document.getElementById('pools-list'),
+
+    // Odds display
+    blockOdds: document.getElementById('block-odds'),
+    footerOdds: document.getElementById('footer-odds'),
 };
 
 /**
@@ -102,6 +104,11 @@ async function init() {
 
         // Set default network
         setNetwork('mainnet');
+
+        // Validate default address (256 Foundation)
+        if (elements.addressInput.value) {
+            validateAddress();
+        }
 
         // Fetch network stats from mempool.space
         fetchNetworkStats();
@@ -181,6 +188,21 @@ function updateNetworkStatsDisplay() {
             </div>
         `).join('');
     }
+
+    // Calculate and display odds of finding a block per swing
+    // Expected hashes to find a block = difficulty * 2^32
+    // This is because difficulty is defined such that at difficulty 1,
+    // the target is 2^224, and the hash space is 2^256, so
+    // expected hashes = 2^256 / target = difficulty * 2^32
+    const expectedHashes = networkStats.difficulty * 4294967296; // 2^32
+    const oddsText = `1 in ${formatLargeNumber(expectedHashes)}`;
+
+    if (elements.blockOdds) {
+        elements.blockOdds.textContent = oddsText;
+    }
+    if (elements.footerOdds) {
+        elements.footerOdds.textContent = oddsText;
+    }
 }
 
 /**
@@ -189,7 +211,7 @@ function updateNetworkStatsDisplay() {
 async function loadWasm() {
     try {
         // Load WASM from pkg directory (copied into web/ for deployment)
-        wasm = await import('./pkg/miner_wasm.js');
+        wasm = await import('../pkg/miner_wasm.js');
         await wasm.default();
 
         log(`WASM loaded (v${wasm.version()})`);
@@ -212,7 +234,7 @@ function useMockMode() {
             constructor(address, network) {
                 this.network = network;
                 this.address = address;
-                this.stats = { total_hashes: 0, shares_found: 0 };
+                this.stats = { total_hashes: 0 };
                 this._nonce = 0;
             }
             static validate_address(address, network) {
@@ -234,31 +256,25 @@ function useMockMode() {
             mine_single_nonce(nonce) {
                 this._nonce = nonce;
                 this.stats.total_hashes++;
-                // Simulate hash result - very small chance of share
-                const shareFound = Math.random() < 0.004; // ~1 in 256 for share
-                if (shareFound) this.stats.shares_found++;
 
-                // Generate mock hash
-                const prefix = shareFound ? '00' : Math.random().toString(16).slice(2, 4);
-                const hash = prefix + Math.random().toString(16).slice(2).padEnd(62, '0');
+                // Generate mock hash - random hex string
+                const hash = Array.from({length: 64}, () =>
+                    Math.floor(Math.random() * 16).toString(16)
+                ).join('');
 
                 return {
-                    share_found: shareFound,
                     block_found: false,
                     hash: hash,
-                    leading_zeros: shareFound ? 8 : 0,
                     nonce: nonce,
                 };
             }
             mine_batch(size) {
                 this.stats.total_hashes += size;
-                const shareFound = Math.random() < 0.001;
-                if (shareFound) this.stats.shares_found++;
                 return {
-                    share_found: shareFound,
                     block_found: false,
-                    hash: shareFound ? '0000' + Math.random().toString(16).slice(2, 62) : null,
-                    leading_zeros: shareFound ? 16 : 0,
+                    hash: Array.from({length: 64}, () =>
+                        Math.floor(Math.random() * 16).toString(16)
+                    ).join(''),
                     hashes_computed: size,
                 };
             }
@@ -266,14 +282,13 @@ function useMockMode() {
                 return {
                     total_hashes: this.stats.total_hashes,
                     hash_rate: this.stats.total_hashes / 10,
-                    shares_found: this.stats.shares_found,
                     current_nonce: this._nonce,
                 };
             }
             start_mining() {}
             stop_mining() {}
             reset() {
-                this.stats = { total_hashes: 0, shares_found: 0 };
+                this.stats = { total_hashes: 0 };
             }
         },
         BlockchainApi: class MockApi {
@@ -285,6 +300,15 @@ function useMockMode() {
             }
             async get_tip_height() {
                 return currentNetwork === 'mainnet' ? 875000 : 50000;
+            }
+            async get_block(hash) {
+                return {
+                    id: hash,
+                    height: currentNetwork === 'mainnet' ? 875000 : 50000,
+                    bits: currentNetwork === 'mainnet' ? 386089497 : 0x1d00ffff, // ~108T difficulty
+                    difficulty: 108000000000000,
+                    timestamp: Math.floor(Date.now() / 1000),
+                };
             }
         }
     };
@@ -398,22 +422,12 @@ async function swingPickaxe() {
         const elapsedMs = Date.now() - miningStartTime;
         elements.elapsedTime.textContent = formatTime(elapsedMs);
 
-        // Check for share
-        if (result.share_found) {
-            sharesFound++;
-            elements.sharesFound.textContent = sharesFound;
-            showShareToast(result.leading_zeros);
-            elements.lotteryTicket.classList.add('share-found');
-            setTimeout(() => elements.lotteryTicket.classList.remove('share-found'), 300);
-            log(`Share found with nonce ${nonce}! Leading zeros: ${result.leading_zeros}`, 'share');
-        }
-
         // Update best hash
         const leadingZeros = countLeadingZeros(result.hash);
         if (leadingZeros > bestLeadingZeros) {
             bestLeadingZeros = leadingZeros;
             bestHash = result.hash;
-            elements.bestHash.textContent = bestHash.slice(0, 20) + '...';
+            elements.bestHash.textContent = bestHash;
         }
 
         // Check for block (extremely unlikely!)
@@ -572,7 +586,6 @@ function autoMiningLoop() {
 
         elements.hashRate.textContent = formatHashRate(stats.hash_rate || 0);
         elements.totalHashes.textContent = formatNumber(totalSwings);
-        elements.sharesFound.textContent = stats.shares_found || 0;
         elements.currentNonce.textContent = formatNumber(stats.current_nonce || 0);
 
         const elapsedMs = Date.now() - miningStartTime;
@@ -581,17 +594,7 @@ function autoMiningLoop() {
         // Update hash display
         if (stats.best_hash) {
             elements.hashDisplay.textContent = stats.best_hash;
-            elements.bestHash.textContent = stats.best_hash.slice(0, 20) + '...';
-        }
-
-        // Handle share found
-        if (result.share_found && !result.block_found) {
-            showShareToast(result.leading_zeros);
-            elements.lotteryTicket.classList.add('share-found');
-            setTimeout(() => {
-                elements.lotteryTicket.classList.remove('share-found');
-            }, 300);
-            log(`Share found! Leading zeros: ${result.leading_zeros}`, 'share');
+            elements.bestHash.textContent = stats.best_hash;
         }
 
         // Handle block found
@@ -716,7 +719,6 @@ async function createMiner(address) {
 
         // Reset stats
         totalSwings = 0;
-        sharesFound = 0;
         bestHash = null;
         bestLeadingZeros = 0;
         miningStartTime = null;
@@ -739,9 +741,9 @@ async function fetchBlockTemplate() {
         const tipHash = await api.get_tip_hash();
         const tipHeight = await api.get_tip_height();
 
-        // For bits, we'd normally get this from the API
-        // Using a reasonable default for now
-        const bits = currentNetwork === 'mainnet' ? 0x17034219 : 0x1d00ffff;
+        // Fetch the tip block to get the actual bits (difficulty target)
+        const blockData = await api.get_block(tipHash);
+        const bits = blockData.bits;
         const timestamp = Math.floor(Date.now() / 1000);
 
         const templateInfo = miner.build_template(tipHash, tipHeight, bits, timestamp);
@@ -750,7 +752,7 @@ async function fetchBlockTemplate() {
         elements.blockHeight.textContent = templateInfo.height;
         elements.infoHeight.textContent = templateInfo.height;
         elements.infoDifficulty.textContent = templateInfo.difficulty_display;
-        elements.infoPrevHash.textContent = tipHash.slice(0, 16) + '...';
+        elements.infoPrevHash.textContent = tipHash;
 
         // Store current height for block watching
         currentBlockHeight = tipHeight;
@@ -802,11 +804,9 @@ async function checkForNewBlock() {
             // Reset mining stats for the new block
             if (!isAutoMining) {
                 totalSwings = 0;
-                sharesFound = 0;
                 bestHash = null;
                 bestLeadingZeros = 0;
                 elements.totalHashes.textContent = '0';
-                elements.sharesFound.textContent = '0';
                 elements.bestHash.textContent = '-';
                 elements.hashDisplay.textContent = 'New block! Enter a nonce and swing!';
             }
@@ -820,27 +820,12 @@ async function checkForNewBlock() {
  * Show notification when a new block is found
  */
 function showNewBlockNotification(height) {
-    // Reuse the share toast for new block notification
-    elements.shareZeros.textContent = `Block ${height} mined!`;
-    elements.shareToast.classList.add('active');
-    elements.shareToast.style.background = '#cd7f32'; // Bronze color for block notification
+    elements.toastMessage.textContent = `⛏ Block ${height} mined by someone else!`;
+    elements.blockToast.classList.add('active');
 
     setTimeout(() => {
-        elements.shareToast.classList.remove('active');
-        elements.shareToast.style.background = ''; // Reset to default
+        elements.blockToast.classList.remove('active');
     }, 3000);
-}
-
-/**
- * Show share found toast
- */
-function showShareToast(leadingZeros) {
-    elements.shareZeros.textContent = leadingZeros;
-    elements.shareToast.classList.add('active');
-
-    setTimeout(() => {
-        elements.shareToast.classList.remove('active');
-    }, 2000);
 }
 
 /**
